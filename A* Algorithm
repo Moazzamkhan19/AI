@@ -1,0 +1,46 @@
+import heapq
+
+def heuristic(node,goal,heuristics):
+    return heuristics.get(node,float('inf'))
+
+def ASTAR(graph,start,goal,heuristics):
+    priorityQueue=[]
+    heapq.heappush(priorityQueue,(0,start))
+    visited={}
+    goalscore={start:0}
+
+    while priorityQueue:
+        fcost,node=heapq.heappop(priorityQueue)
+        if node==goal:
+            return goalscore[node]
+        if node not in visited or goalscore[node]<visited[node]:
+            visited[node]=goalscore[node]
+            for x , edgecost in graph[node]:
+                total=goalscore[node]+edgecost
+                if x not in goalscore or total<goalscore[x]:
+                    goalscore[x]=total
+                    fscore=total+heuristic(x,goal,heuristics)
+                    heapq.heappush(priorityQueue,(fscore,x))
+
+    return float('inf')
+graph = {
+    'S': [('A', 3), ('H', 9), ('I', 9)],
+    'A': [('S', 3), ('B', 5), ('H', 3)],
+    'B': [('A', 5), ('H', 9), ('C', 6), ('D', 2)],
+    'C': [('B', 6), ('H', 1), ('I', 2), ('F', 7), ('D', 2)],
+    'D': [('B', 2), ('C', 2), ('E', 5)],
+    'E': [('D', 5), ('F', 1), ('G', 8)],
+    'F': [('C', 7), ('I', 2), ('E', 1), ('G', 4)],
+    'G': [('E', 8), ('F', 4)],
+    'H': [('S', 9), ('A', 3), ('B', 9), ('C', 1), ('I', 4)],
+    'I': [('S', 9), ('H', 4), ('C', 2), ('F', 2)]
+}
+
+heuristics={'S':11,'A':9,'B':7,'C':4,'D':3,'E':2,'F':4,'G':0,'H':6,'I':7}
+#HEURISTICS VALUES OF EACH NODE
+
+start='A'
+goal='G'
+
+mincost=ASTAR(graph,start,goal,heuristics)
+print(f"Minimum cost from {start} to {goal}: {mincost}")
