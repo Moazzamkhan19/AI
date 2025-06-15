@@ -1,0 +1,53 @@
+import random
+
+
+CHROMOSOME=6
+POPULATION_SIZE=4
+GENERATION=5
+MUTATION=0.1
+
+#INITIALIZING
+def create_chromosome():
+    return ''.join(random.choice('01') for _ in range(CHROMOSOME))
+def fitness(chromosome):
+    return chromosome.count('1')
+def Parents(population):
+    parent1=max(random.sample(population,2),key=fitness)
+    parent2=max(random.sample(population,2),key=fitness)
+    return parent1,parent2
+def Cross_over(p1,p2):
+    point=random.randint(1,CHROMOSOME-1)
+    return p1[:point]+p2[point:] , p2[:point]+p1[point:]
+def Mutation(c):
+    result=''
+    for bit in c:
+        if random.random()<MUTATION:
+            result+='1' if bit == '0' else '0'
+        else:
+            result+=bit
+    return result
+def GA():
+    population=[create_chromosome() for _ in range(POPULATION_SIZE)]
+    print(f"Initial Population: {population}")
+
+    for generation in range(GENERATION):
+        print(f"\nGeneration {generation + 1}:")
+        new_population=[]
+        while len(new_population)<len(population):
+            p1,p2=Parents(population)
+            c1,c2=Cross_over(p1,p2)
+            c1=Mutation(c1)
+            c2=Mutation(c2)
+            new_population.extend([c1,c2])
+
+        population=new_population[:POPULATION_SIZE]
+
+        for c in population:
+            print(f"{c} (Fitness: {fitness(c)})")
+        if max(fitness(c) for c in population)==CHROMOSOME:
+            print("✅ Optimal solution found early!")
+            break
+    best = max(population, key=fitness)
+    print(f"\nBest Solution: {best} with Fitness = {fitness(best)}")
+
+GA()
